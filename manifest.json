@@ -17,7 +17,11 @@
   "panel": {
     "width": 320
   },
-  "files": ["bin/recent-downloads"],
+  "files": [
+    "bin/recent-downloads",
+    "assets/preview-widget.svg",
+    "assets/preview-panel.svg"
+  ],
   "capabilities": {
     "densities": [
       "glyph",

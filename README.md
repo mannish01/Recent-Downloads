@@ -21,7 +21,7 @@
   <img alt="Illustration of the Recent Downloads popup" src="assets/preview-panel.svg" width="640">
 </p>
 
-These are vector UI illustrations rather than live desktop captures. The real widget uses your active Ryoku theme colors and your actual Downloads folder.
+These are polished vector UI illustrations rather than live desktop captures; the filenames, sizes, and timestamps shown are sample content. The real widget uses your active Ryoku theme colors and reads your actual Downloads folder.
 
 ## Features
 
