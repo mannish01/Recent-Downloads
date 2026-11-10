@@ -1,56 +1,24 @@
 # Recent Downloads
 
-A Ryoku shell plugin (`recent-downloads`) scaffolded for the `topbarGlyph` host. The working
-demo is a counter that ticks once a second; edit it into your own plugin.
+A small Ryoku QS Bar button for browsing the latest files in the user's XDG Downloads folder.
 
-## What it does
+## Use
 
-- **Service** (`service/Main.qml`): the logic, no UI. Holds the live state the
-  view reads through `pluginApi.mainInstance`.
-- **Widget** (`content/Widget.qml`): the one view every host mounts.
-- **Panel** (`content/Panel.qml`): present only in a `--bar` scaffold; the bar
-  opens it beneath the glyph.
+The bar glyph shows a minimal down-arrow icon and the tooltip **Recent Downloads**. Click it to open a panel with up to ten completed files, sorted by modification time. Click a file to open it with the desktop's default application, or use **Open Downloads folder**. Refresh rescans the folder.
 
-Ryoku ships four hosts: `topbarGlyph`, `desktopWidget`, `framePopout`, and
-`sidebarCard`. A sidebar card still uses `content/Widget.qml` plus
-`service/Main.qml`; it does not have a separate sidebar entry point. Its root
-`Item` exposes `s`, `open`, `reveal`, `tabActive`, `pluginApi`, and
-`requestClose()`. Ryoku owns its `width`, and the item reports only its
-`implicitHeight`.
+## Placement
 
-## What it reads and writes
+The plugin is registered as a QS Bar widget but is intentionally installed without a bar placement. In Bar Studio, open **QS Bar Settings → Layout → Add widget**, add **Recent Downloads**, then move it to the left, center, or right lane and reorder it. The selected layout is stored by Ryoku and persists across bar and system restarts. The plugin manifest does not set a default lane.
 
-The demo reads nothing off the machine and writes nothing. When you add real
-behaviour, keep to the rules in `AGENTS.md`: read settings through
-`pluginApi.pluginSettings` behind a default, write them only through
-`pluginApi.saveSetting(key, value)`, and write files only under
-`pluginApi.stateDir`. Every external command belongs in `bin/` or in
-`dependencies.commands`; every host you contact belongs in
-`capabilities.network`; a privileged action runs only through `pkexec` listed in
-`capabilities.privileged`.
+## Data and dependencies
 
-## Settings
+`bin/recent-downloads` reads file names, paths, sizes, and modification times in the XDG Downloads directory. It skips hidden files, directories, and common partial-download suffixes. It writes no files and makes no network requests. Clicking a file or the folder launches `xdg-open` with that path as a separate argument.
 
-| key       | type   | default | description         |
-| --------- | ------ | ------- | ------------------- |
-| showCount | toggle | true    | Show the tick count |
+The helper uses Python 3 and `xdg-user-dir` to locate the XDG Downloads directory, falling back to `~/Downloads`. These commands and `xdg-open` are declared in the manifest.
 
-## Preview
+## Files
 
-Capture a real screenshot of the widget and save it as
-`assets/preview-widget.png`, then list it under `files` in `manifest.json`. The
-store shows it in the catalogue.
-
-## Build, check, install
-
-```
-ryoku plugin validate .
-ryoku plugin add . --yes
-```
-
-Enable and place it under **Ryoku Settings > Add-ons**. A bar plugin can instead
-use `ryoku plugin add . --bar --yes` to enable it on the current bar immediately.
-
-## Author
-
-Manish <manish@localhost>: this plugin is community-made (`official` is false).
+- `service/Main.qml`: requests and holds the recent-file list.
+- `content/Widget.qml`: themed glyph and tooltip.
+- `content/Panel.qml`: recent-file panel and open actions.
+- `bin/recent-downloads`: read-only XDG Downloads scanner.

@@ -1,68 +1,61 @@
 pragma ComponentBehavior: Bound
+
 import QtQuick
+import QtQuick.Controls
+import QtQuick.Shapes
 import Ryoku.PluginKit.Singletons
 
-// content/Widget.qml is the one view every host mounts (on the bar, this is the
-// glyph). It reads live state from the service through pluginApi.mainInstance.
-// The sidebar host sets open, reveal, tabActive, width, s and pluginApi; other
-// hosts set active, density and widthBudget as well. Read host values, never
-// assign them.
 Item {
     id: root
-
     property var pluginApi
     property var screen
     property bool active: false
     property string density: "glyph"
     property real s: 1
-    property real widthBudget: 0
+    property real widthBudget: 220
     property bool open: false
     property real reveal: 0
     property bool tabActive: false
     signal requestClose()
 
-    readonly property var service: pluginApi ? pluginApi.mainInstance : null
-    readonly property int count: service ? service.count : 0
+    implicitWidth: 24 * root.s
+    implicitHeight: 24 * root.s
 
-    implicitWidth: row.implicitWidth
-    implicitHeight: Math.max(row.implicitHeight, 18 * root.s)
+    Shape {
+        anchors.centerIn: parent
+        width: 24
+        height: 24
+        scale: root.s * 0.78
+        preferredRendererType: Shape.CurveRenderer
 
-    Row {
-        id: row
-        anchors.verticalCenter: parent.verticalCenter
-        spacing: 6 * root.s
-
-        // The plugin's mark. Tint it with the themed accent so it follows the
-        // active palette (Theme resolves colour from the system scheme).
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            text: "\u25C6"
-            color: (root.active || root.open) ? Theme.accent : Theme.dim
-            font.family: Theme.mono
-            font.pixelSize: 13 * root.s
-        }
-
-        // The label beside the mark, elided to the width the host allows.
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            text: root.count
-            color: Theme.bright
-            font.family: Theme.font
-            font.pixelSize: 13 * root.s
-            elide: Text.ElideRight
-            width: root.widthBudget > 0 ? Math.min(implicitWidth, root.widthBudget) : implicitWidth
+        ShapePath {
+            strokeColor: hover.containsMouse ? Theme.bright : Theme.dim
+            strokeWidth: 1.5
+            capStyle: ShapePath.RoundCap
+            joinStyle: ShapePath.RoundJoin
+            fillColor: "transparent"
+            startX: 6
+            startY: 20
+            PathLine { x: 18; y: 20 }
+            PathMove { x: 12; y: 4 }
+            PathLine { x: 12; y: 16 }
+            PathLine { x: 15.5; y: 12.5 }
+            PathMove { x: 12; y: 16 }
+            PathLine { x: 8.5; y: 12.5 }
         }
     }
 
     MouseArea {
+        id: hover
         anchors.fill: parent
+        hoverEnabled: true
         onClicked: {
-            if (!root.pluginApi)
-                return;
-            if (root.open)
-                root.requestClose();
-            else if (root.pluginApi.togglePanel)
+            if (root.pluginApi && root.pluginApi.togglePanel)
                 root.pluginApi.togglePanel();
         }
+        ToolTip.visible: containsMouse
+        ToolTip.text: "Recent Downloads"
+        ToolTip.delay: 450
+        ToolTip.timeout: 3000
     }
 }

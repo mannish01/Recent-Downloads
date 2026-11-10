@@ -1,32 +1,63 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Quickshell
+import Quickshell.Io
 
-// service/Main.qml is the plugin's logic: no UI. The host loads one instance and
-// hands it to every view as pluginApi.mainInstance, so the widget and the panel
-// read the same live state. Replace the demo counter below with your plugin's
-// real state and the singletons or bin/ scripts that feed it.
 Item {
     id: svc
 
-    // Set by the host after this loads; the plugin's settings live behind it.
-    // Read settings through pluginApi.pluginSettings, always behind a default,
-    // and write them only through pluginApi.saveSetting(key, value) (R5).
     property var pluginApi
-    readonly property var settings: pluginApi ? pluginApi.pluginSettings : null
+    property var items: []
+    property string downloadDir: ""
+    property string error: ""
+    property bool refreshing: false
 
-    // Demo state: a counter that ticks once a second.
-    property int count: 0
-
-    // The panel's RESET button calls this.
-    function reset() {
-        svc.count = 0;
+    function refresh() {
+        if (svc.refreshing || !svc.pluginApi || !svc.pluginApi.pluginDir)
+            return;
+        svc.error = "";
+        svc.refreshing = true;
+        listing.running = true;
     }
 
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        onTriggered: svc.count += 1
+    function apply(line) {
+        try {
+            const data = JSON.parse(String(line));
+            svc.downloadDir = String(data.dir || "");
+            svc.items = Array.isArray(data.items) ? data.items : [];
+            svc.error = data.error ? String(data.error) : "";
+        } catch (e) {
+            svc.items = [];
+            svc.error = "Could not read the Downloads folder.";
+        }
+    }
+
+    function openFile(path) {
+        if (path)
+            Quickshell.execDetached(["xdg-open", String(path)]);
+    }
+
+    function openFolder() {
+        if (svc.downloadDir)
+            Quickshell.execDetached(["xdg-open", svc.downloadDir]);
+    }
+
+    Process {
+        id: listing
+        command: svc.pluginApi && svc.pluginApi.pluginDir
+            ? [svc.pluginApi.pluginDir + "/bin/recent-downloads"] : []
+        running: false
+        stdout: SplitParser {
+            onRead: line => svc.apply(line)
+        }
+        stderr: SplitParser {
+            onRead: line => console.warn("Recent Downloads:", line)
+        }
+        onExited: (code, status) => {
+            svc.refreshing = false;
+            if (code !== 0 && svc.error === "")
+                svc.error = "Could not read the Downloads folder.";
+        }
     }
 }

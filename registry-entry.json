@@ -1,0 +1,25 @@
+{
+  "id": "recent-downloads",
+  "name": "Recent Downloads",
+  "version": "0.1.1",
+  "path": "plugins/recent-downloads",
+  "author": "Manish <manish@localhost>",
+  "summary": "A minimal bar button with a quick list of recent files from Downloads.",
+  "description": "A minimal bar button with a quick list of recent files from Downloads.",
+  "tags": [
+    "bar-widget"
+  ],
+  "accent": "#8f8378",
+  "surface": "#101010",
+  "preview": "",
+  "screenshots": [],
+  "manifest": "product-manifest.json",
+  "manifestSha256": "35a61c4e7981081060dd3cf300145fecbeeadc983525f5df3a86967ed892666a",
+  "official": false,
+  "tagline": "A minimal bar button with a quick list of recent files from Downloads.",
+  "icon": "",
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "lastUpdated": "2026-11-10"
+}

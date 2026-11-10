@@ -1,9 +1,9 @@
 {
   "id": "recent-downloads",
   "name": "Recent Downloads",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "author": "Manish \u003cmanish@localhost\u003e",
-  "description": "Recent Downloads is a Ryoku shell plugin.",
+  "description": "A minimal bar button with a quick list of recent files from Downloads.",
   "license": "MIT",
   "official": false,
   "hosts": [
@@ -17,7 +17,7 @@
   "panel": {
     "width": 320
   },
-  "files": [],
+  "files": ["bin/recent-downloads"],
   "capabilities": {
     "densities": [
       "glyph",
@@ -29,7 +29,7 @@
     "label": "Recent Downloads"
   },
   "dependencies": {
-    "commands": []
+    "commands": ["python3", "xdg-user-dir", "xdg-open"]
   },
   "metadata": {
     "settings": [
